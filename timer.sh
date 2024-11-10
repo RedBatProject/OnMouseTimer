@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Initialize variables to track time and mouse movement
-SECONDS=0  # Total seconds the mouse has been moved
+MINUTES=0  # Total MINUTES the mouse has been moved
 MOVED=false  # Flag to track if the mouse is currently moving
 PREV_X=0  # Previous X-coordinate of the mouse
 PREV_Y=0  # Previous Y-coordinate of the mouse
@@ -24,15 +24,16 @@ do
   # Get the current timestamp
   CURRENT_TIME=$(date +%s)
 
-  # Check if 5 seconds have passed since the last mouse position check
-  if [ $((CURRENT_TIME - LAST_CHECK)) -ge 5 ]; then
+  # Check if 60 MINUTES have passed since the last mouse position check
+  if [ $((CURRENT_TIME - LAST_CHECK)) -ge 60 ]; then
 
-    echo "Total seconds: $SECONDS" > "$DATA_FILE"
     # Get the current mouse position using xdotool
     eval $(xdotool getmouselocation --shell)
 
     # Check if the mouse has moved since the last check
     if [ $X -ne $PREV_X ] || [ $Y -ne $PREV_Y ]; then
+      MINUTES=$((MINUTES + 1))
+	  echo "Total Time: $MINUTES" > "$DATA_FILE"
       # If the mouse was previously not moving, mark it as moving and record the start time
       if [ $MOVED = false ]; then
         MOVED=true
@@ -43,8 +44,6 @@ do
       if [ $MOVED = true ]; then
         MOVED=false
         END_TIME=$(date +%s)
-        # Add the time the mouse was moving to the total seconds
-        # SECONDS=$((SECONDS + (END_TIME - START_TIME)))
       fi
     fi
 
@@ -56,17 +55,7 @@ do
     LAST_CHECK=$CURRENT_TIME
   fi
 
-  # If the mouse is currently moving, increment the total seconds
-  if [ $MOVED = true ]; then
-    SECONDS=$((SECONDS + 1))
-  fi
-
-  # Print the total seconds the mouse has been moved
-  printf "\rtotal seconds: $SECONDS"
 
   # Sleep for 1 second before checking again
   sleep 1
-  # im new to shel so i do not know where i did wrong that this happened to me. i meant the below part of code!
-  #but it is working. dont be worry.
-  SECONDS=$((SECONDS - 1))
 done
