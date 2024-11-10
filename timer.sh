@@ -8,7 +8,7 @@ PREV_Y=0  # Previous Y-coordinate of the mouse
 LAST_CHECK=$(date +%s)  # Timestamp of the last mouse position check
 ELAPSE=10
 CURRENT_DATE=$(date +"%d-%m-%Y")
-my_directory="./timelog2"
+my_directory="./timelog"
 [ -d $my_directory ] || mkdir $my_directory
 
 
@@ -26,7 +26,7 @@ do
   CURRENT_TIME=$(date +%s)
 
   # Check if 60 MINUTES have passed since the last mouse position check
-  if [ $((CURRENT_TIME - LAST_CHECK)) -ge 3 ]; then
+  if [ $((CURRENT_TIME - LAST_CHECK)) -ge 60 ]; then
 
     # Get the current mouse position using xdotool
     eval $(xdotool getmouselocation --shell)
@@ -36,6 +36,7 @@ do
       MINUTES=$((MINUTES + 1))
 	  #echo "Total Time: $MINUTES" > "$DATA_FILE"
 	  sed -i "1s/.*/Total Time: $MINUTES/" "$DATA_FILE"
+	  echo "Total Time: $MINUTES"
       # If the mouse was previously not moving, mark it as moving and record the start time
       if [ $MOVED = false ]; then
         MOVED=true
